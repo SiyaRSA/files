@@ -1,0 +1,18 @@
+unsafe extern "C" fn set_parent(
+    plugin: *const clap_plugin,
+    window: *const clap_window,
+) -> bool {
+    crate::logger::log("🪟 set_parent CALLED");
+    if plugin.is_null() || window.is_null() { return false }
+    let _wrapper = unsafe { PluginWrapper::from_plugin(plugin) };
+
+    let window = unsafe { &*window };
+    unsafe {
+        let api = CStr::from_ptr(window.api);
+        if api == CLAP_WINDOW_API_WIN32 {
+            let hwnd = window.specific.win32;
+            crate::logger::log(&format!("HWND received: {:?}", hwnd));
+        }
+    }
+    true
+}
